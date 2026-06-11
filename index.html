@@ -182,7 +182,7 @@ window.MYC = { rgb:'140,160,185' };
             line:'rgba(70,55,58,.18)', myc:'110,90,92',
             mood:'川がまだ講義の準備をしています。紙の匂いが冷たい。', breath:'18s'},
     day:   {bg1:'#E8EAE0', bg2:'#F2F1E7', ink:'#33402F', dim:'#7C8676', accent:'#4E7A55',
-            line:'rgba(50,65,48,.16)', myc:'50,88,42',
+            line:'rgba(50,65,48,.16)', myc:'30,60,25',
             mood:'風が今日のシラバスを運んできました。鳥は三限目から図書館にいます。', breath:'14s'},
     dusk:  {bg1:'#3C2E3E', bg2:'#7A4F46', ink:'#E5D5CB', dim:'#A98F92', accent:'#D89A6A',
             line:'rgba(230,210,200,.2)', myc:'210,160,130',
@@ -214,7 +214,6 @@ window.MYC = { rgb:'140,160,185' };
   }
   function depts(phase, season){
     return [
-      {name:'ダークエコロジー＆都市共存学科', open:true, note:'常時'},
       {name:'種間翻訳学科', open:(phase==='day'||phase==='dawn'), note:'暁・昼'},
       {name:'音響エンタングルメント学科', open:(phase==='dusk'||phase==='night'), note:'夕・夜'},
       {name:'ハイパーオブジェクト研究学科', open:true, note:'常時（見えないだけ）'},
