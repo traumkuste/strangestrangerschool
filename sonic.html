@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>音響エンタングルメント学科 — 音の圃場</title>
+<style>
+  :root{
+    --bg:#0F1320; --bg2:#1A2133; --ink:#CBD2DC; --dim:#7C8696;
+    --accent:#9CC4BC; --line:rgba(200,212,228,.16);
+    --soil:#B07A52; --windc:#9CC4BC; --elec:#8BE3C9; --murmur:#D8C98F;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+    background:var(--bg); color:var(--ink); min-height:100vh;
+    line-height:1.9; letter-spacing:.04em; overflow-x:hidden}
+  #myc{position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.5;
+       animation:mycdrift 90s ease-in-out infinite alternate}
+  @keyframes mycdrift{from{transform:translate(-12px,-8px) scale(1.03)}to{transform:translate(12px,10px) scale(1.06)}}
+  @media (prefers-reduced-motion: reduce){
+    #myc{animation:none} .spore.move{animation:none !important}
+  }
+  main{position:relative; z-index:1; max-width:680px; margin:0 auto; padding:6vh 20px 12vh}
+  .eyebrow{font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:.66rem;
+    letter-spacing:.3em; color:var(--dim); text-transform:uppercase; margin-bottom:1rem}
+  .eyebrow a{color:var(--dim); text-decoration:none; border-bottom:1px dotted var(--dim)}
+  h1{font-size:clamp(1.3rem,5vw,1.8rem); font-weight:600; letter-spacing:.1em; margin-bottom:.3rem}
+  .sub{font-size:.84rem; color:var(--dim); font-style:italic; margin-bottom:1.6rem}
+  .notice{font-size:.78rem; color:var(--dim); font-family:ui-monospace,Menlo,monospace;
+    border:1px dotted var(--line); padding:.6em 1em; margin-bottom:1.8rem; letter-spacing:.06em}
+  h2{font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:.64rem; letter-spacing:.28em;
+    color:var(--dim); font-weight:400; border-bottom:1px solid var(--line);
+    padding-bottom:.5rem; margin:2.6rem 0 1rem}
+
+  /* ---- 圃場 ---- */
+  #fieldwrap{position:relative}
+  #field{position:relative; height:56vh; min-height:340px;
+    border:1px solid var(--line); border-radius:4px; overflow:hidden;
+    background:linear-gradient(to bottom, rgba(20,28,46,.25), rgba(10,13,22,.55))}
+  .axis{position:absolute; font-family:ui-monospace,Menlo,monospace; font-size:.62rem;
+    letter-spacing:.22em; color:var(--dim); pointer-events:none; z-index:2}
+  .axis.far{top:.7em; left:1em}
+  .axis.nearax{bottom:.7em; left:1em}
+  .spore-btn{position:absolute; transform:translate(-50%,-50%); background:none; border:none;
+    cursor:pointer; padding:14px; z-index:3; -webkit-tap-highlight-color:transparent}
+  .spore-btn:focus-visible{outline:1px dotted var(--accent); border-radius:50%}
+  .spore{display:block; border-radius:50%; transition:box-shadow .3s}
+  .spore.move{animation:drift ease-in-out infinite alternate}
+  @keyframes drift{from{transform:translateX(-26px)}to{transform:translateX(26px)}}
+  .spore-btn.sel .spore{box-shadow:0 0 0 2px var(--ink), 0 0 18px currentColor !important}
+  .empty{position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    color:var(--dim); font-size:.84rem; z-index:1; padding:2em; text-align:center; line-height:2.2}
+
+  .legend{display:flex; flex-wrap:wrap; gap:1.1em; margin-top:.8rem;
+    font-family:ui-monospace,Menlo,monospace; font-size:.68rem; letter-spacing:.14em; color:var(--dim)}
+  .legend i{display:inline-block; width:.7em; height:.7em; border-radius:50%; margin-right:.45em}
+
+  /* ---- 標本フォーム ---- */
+  .form{display:grid; gap:.9rem}
+  label{font-family:ui-monospace,Menlo,monospace; font-size:.66rem;
+    letter-spacing:.2em; color:var(--dim); display:block; margin-bottom:.35rem}
+  input[type=text],input[type=url],textarea,select{
+    width:100%; background:rgba(255,255,255,.04); color:var(--ink);
+    border:1px solid var(--line); border-radius:3px; padding:.6em .8em;
+    font-family:inherit; font-size:.92rem; letter-spacing:.04em}
+  input:focus,textarea:focus,select:focus{outline:none; border-color:var(--accent)}
+  textarea{min-height:4.5em; resize:vertical; line-height:1.8}
+  select{appearance:none}
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:.9rem}
+  .distrow{display:flex; align-items:center; gap:.7em;
+    font-family:ui-monospace,Menlo,monospace; font-size:.7rem; color:var(--dim)}
+  input[type=range]{flex:1; accent-color:var(--accent)}
+  .chk{display:flex; align-items:center; gap:.6em; font-size:.86rem}
+  .chk input{accent-color:var(--accent); width:1.1em; height:1.1em}
+  .btns{display:flex; flex-wrap:wrap; gap:.6rem; margin-top:.3rem}
+  .btns button{font-family:ui-monospace,Menlo,monospace; font-size:.72rem; letter-spacing:.16em;
+    background:transparent; color:var(--ink); border:1px solid var(--line); border-radius:2em;
+    padding:.55em 1.3em; cursor:pointer; transition:border-color .3s,color .3s}
+  .btns button:hover,.btns button:focus-visible{border-color:var(--accent); color:var(--accent); outline:none}
+  .btns button.danger:hover{border-color:#C77; color:#C99}
+  #player audio{width:100%; margin-top:.4rem}
+  .status{font-family:ui-monospace,Menlo,monospace; font-size:.68rem; color:var(--dim);
+    letter-spacing:.1em; line-height:2.2}
+  .status button{font-family:inherit; font-size:inherit; letter-spacing:inherit;
+    background:none; border:none; color:var(--accent); cursor:pointer;
+    border-bottom:1px dotted var(--accent); padding:0; margin-right:1.2em}
+  footer{font-size:.72rem; color:var(--dim); border-top:1px solid var(--line);
+    margin-top:3rem; padding-top:1.3rem; line-height:2.1}
+</style>
+</head>
+<body>
+<canvas id="myc" aria-hidden="true"></canvas>
+<main>
+  <p class="eyebrow"><a href="index.html">← 校門</a>　Strange Stranger School</p>
+  <h1>音響エンタングルメント学科</h1>
+  <p class="sub">音の圃場 — recordings grow here like spores.</p>
+  <p class="notice" id="notice" hidden>本学科の開講は夕・夜です。いまは閉講中ですが、もぐりの聴講は黙認されています。</p>
+
+  <h2>圃場 / THE FIELD</h2>
+  <div id="fieldwrap">
+    <div id="field" aria-label="録音の圃場">
+      <span class="axis far">広い ── 遠くに霞む</span>
+      <span class="axis nearax">近い ── 耳もとで鳴る</span>
+      <div class="empty" id="empty">まだ何も蒔かれていません。<br>最初の録音の記憶を、下の標本ラベルから蒔いてください。</div>
+    </div>
+    <div class="legend">
+      <span><i style="background:var(--soil)"></i>土</span>
+      <span><i style="background:var(--windc)"></i>風</span>
+      <span><i style="background:var(--elec)"></i>電子</span>
+      <span><i style="background:var(--murmur)"></i>ざわめき</span>
+      <span>◌…移動する音は漂います</span>
+    </div>
+  </div>
+
+  <h2 id="formtitle">標本ラベル / SPECIMEN LABEL</h2>
+  <div class="form">
+    <div>
+      <label for="f-title">題（いつ・どこの音か）</label>
+      <input type="text" id="f-title" placeholder="例: 高架下、夕方の雨はじまり">
+    </div>
+    <div>
+      <label for="f-memo">メモ（聴こえたこと・聴き方）</label>
+      <textarea id="f-memo" placeholder="例: 雨粒が金属とビニールで違う言語を話していた"></textarea>
+    </div>
+    <div class="row2">
+      <div>
+        <label for="f-mat">素材</label>
+        <select id="f-mat">
+          <option value="soil">土</option>
+          <option value="wind">風</option>
+          <option value="elec">電子</option>
+          <option value="murmur">ざわめき</option>
+        </select>
+      </div>
+      <div>
+        <label>動態</label>
+        <span class="chk"><input type="checkbox" id="f-move"><span>移動する音</span></span>
+      </div>
+    </div>
+    <div>
+      <label for="f-dist">距離</label>
+      <div class="distrow"><span>近い</span><input type="range" id="f-dist" min="0" max="100" value="40"><span>広い</span></div>
+    </div>
+    <div>
+      <label for="f-url">音源URL（あれば。後から足せます）</label>
+      <input type="url" id="f-url" placeholder="https://...（mp3/wav等への直リンク）">
+      <div id="player"></div>
+    </div>
+    <div class="btns">
+      <button id="b-save">蒔く</button>
+      <button id="b-new" hidden>新しい標本</button>
+      <button id="b-del" class="danger" hidden>抜く（削除）</button>
+    </div>
+  </div>
+
+  <h2>保管室 / ARCHIVE ROOM</h2>
+  <p class="status">
+    <button id="b-export">記録を書き出す</button>
+    <button id="b-import">読み込む</button>
+    <input type="file" id="f-import" accept="application/json" hidden>
+    <br><span id="storeinfo"></span>
+  </p>
+
+  <footer>素材は色に、距離は遠近に、移動は漂いに翻訳されます。<br>圃場の胞子に触れると、ラベルが開きます。</footer>
+</main>
+
+<script>
+/* ====== 菌糸メッシュ ====== */
+window.MYC={rgb:'130,155,170'};
+(function(){
+  const cv=document.getElementById('myc'), ctx=cv.getContext('2d');
+  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let W,H; const ws=[]; const MAX=26;
+  function size(){const d=Math.min(window.devicePixelRatio||1,1.5);
+    W=cv.width=Math.floor(innerWidth*d); H=cv.height=Math.floor(innerHeight*d);}
+  size(); addEventListener('resize',size);
+  function reset(w){w.x=Math.random()*W; w.y=Math.random()*H;
+    w.a=Math.random()*6.283; w.life=240+Math.random()*420;}
+  function spawn(x,y,a){if(ws.length>=MAX)return;
+    const w={}; reset(w); if(x!==undefined){w.x=x;w.y=y;w.a=a;} ws.push(w);}
+  for(let i=0;i<12;i++)spawn();
+  function step(){
+    ctx.globalCompositeOperation='destination-out';
+    ctx.fillStyle='rgba(0,0,0,0.045)'; ctx.fillRect(0,0,W,H);
+    ctx.globalCompositeOperation='source-over';
+    const c=window.MYC.rgb;
+    for(const w of ws){
+      const nx=w.x+Math.cos(w.a)*1.4, ny=w.y+Math.sin(w.a)*1.4;
+      ctx.strokeStyle='rgba('+c+',0.5)'; ctx.lineWidth=0.7;
+      ctx.beginPath(); ctx.moveTo(w.x,w.y); ctx.lineTo(nx,ny); ctx.stroke();
+      w.x=nx; w.y=ny; w.a+=(Math.random()-0.5)*0.55; w.life--;
+      if(Math.random()<0.012){
+        ctx.fillStyle='rgba('+c+',0.6)';
+        ctx.beginPath(); ctx.arc(w.x,w.y,1.1,0,6.3); ctx.fill();
+        spawn(w.x,w.y,w.a+(Math.random()<.5?1:-1)*0.9);
+      }
+      if(w.life<=0||w.x<-9||w.x>W+9||w.y<-9||w.y>H+9) reset(w);
+    }
+  }
+  if(reduced){for(let i=0;i<700;i++)step();}
+  else{(function loop(){step(); requestAnimationFrame(loop);})();}
+})();
+
+/* ====== 保管室（どこに置かれても記憶を保つ） ====== */
+const KEY='sss-sounds';
+const mem={};
+async function loadAll(){
+  try{ if(window.storage){ const r=await window.storage.get(KEY);
+    if(r&&r.value) return {data:JSON.parse(r.value), mode:'cloud'}; return {data:[],mode:'cloud'}; } }catch(e){}
+  try{ const v=localStorage.getItem(KEY);
+    return {data:v?JSON.parse(v):[], mode:'local'}; }catch(e){}
+  return {data:mem[KEY]||[], mode:'memory'};
+}
+async function saveAll(data){
+  const s=JSON.stringify(data);
+  try{ if(window.storage){ await window.storage.set(KEY,s); return 'cloud'; } }catch(e){}
+  try{ localStorage.setItem(KEY,s); return 'local'; }catch(e){}
+  mem[KEY]=data; return 'memory';
+}
+function modeText(m){
+  return {cloud:'記録先: 学校の保管室（この場所に保存されます）',
+          local:'記録先: この端末（同じブラウザで開けば残ります）',
+          memory:'記録先: このページ限り — 「書き出す」をお勧めします'}[m];
+}
+
+/* ====== 圃場 ====== */
+const COLORS={soil:'#B07A52', wind:'#9CC4BC', elec:'#8BE3C9', murmur:'#D8C98F'};
+const $=id=>document.getElementById(id);
+let items=[], editing=null, storeMode='memory';
+
+function renderField(){
+  const field=$('field');
+  field.querySelectorAll('.spore-btn').forEach(n=>n.remove());
+  $('empty').style.display=items.length?'none':'flex';
+  for(const it of items){
+    const btn=document.createElement('button');
+    btn.className='spore-btn'+(editing===it.id?' sel':'');
+    btn.style.left=it.x+'%';
+    btn.style.top=(72-it.dist*0.66)+'%';
+    btn.title=it.title;
+    btn.setAttribute('aria-label',it.title);
+    const sp=document.createElement('span');
+    sp.className='spore'+(it.move?' move':'');
+    const c=COLORS[it.mat]||COLORS.soil;
+    const size=Math.max(9, 30-it.dist*0.2);
+    sp.style.width=size+'px'; sp.style.height=size+'px';
+    sp.style.background=c; sp.style.color=c;
+    sp.style.opacity=Math.max(.55, 1-it.dist*0.004);
+    sp.style.filter='blur('+(it.dist*0.02)+'px)';
+    if(it.mat==='murmur'){
+      sp.style.boxShadow='0 0 10px '+c+', 7px 3px 0 -2px '+c+', -6px 6px 0 -3px '+c+', 3px -7px 0 -3px '+c+', -5px -4px 0 -3px '+c;
+    }else{
+      sp.style.boxShadow='0 0 12px '+c;
+    }
+    if(it.move) sp.style.animationDuration=(24+(it.id%7)*5)+'s';
+    btn.appendChild(sp);
+    btn.addEventListener('click',()=>openItem(it.id));
+    field.appendChild(btn);
+  }
+}
+function renderPlayer(url){
+  const p=$('player'); p.innerHTML='';
+  if(url){
+    const a=document.createElement('audio');
+    a.controls=true; a.preload='none'; a.src=url;
+    p.appendChild(a);
+  }
+}
+function fillForm(it){
+  $('f-title').value=it?it.title:'';
+  $('f-memo').value=it?it.memo:'';
+  $('f-mat').value=it?it.mat:'soil';
+  $('f-move').checked=it?!!it.move:false;
+  $('f-dist').value=it?it.dist:40;
+  $('f-url').value=it?(it.url||''):'';
+  renderPlayer(it?it.url:'');
+  $('b-save').textContent=it?'更新する':'蒔く';
+  $('b-del').hidden=!it;
+  $('b-new').hidden=!it;
+  $('formtitle').textContent=it?'標本ラベル — 「'+it.title+'」':'標本ラベル / SPECIMEN LABEL';
+}
+function openItem(id){
+  editing=id;
+  const it=items.find(x=>x.id===id);
+  fillForm(it);
+  renderField();
+  $('formtitle').scrollIntoView({behavior:'smooth',block:'start'});
+}
+async function persist(){
+  storeMode=await saveAll(items);
+  $('storeinfo').textContent=modeText(storeMode)+'　/　標本数: '+items.length;
+}
+$('b-save').addEventListener('click',async()=>{
+  const title=$('f-title').value.trim();
+  if(!title){ $('f-title').focus(); return; }
+  const data={title, memo:$('f-memo').value.trim(), mat:$('f-mat').value,
+    move:$('f-move').checked, dist:parseInt($('f-dist').value,10),
+    url:$('f-url').value.trim()};
+  if(editing){
+    Object.assign(items.find(x=>x.id===editing), data);
+  }else{
+    items.push(Object.assign({id:Date.now(), date:new Date().toISOString().slice(0,10),
+      x:6+Math.random()*88}, data));
+  }
+  await persist(); renderField(); renderPlayer(data.url);
+  if(!editing) fillForm(null);
+});
+$('b-new').addEventListener('click',()=>{ editing=null; fillForm(null); renderField(); });
+$('b-del').addEventListener('click',async()=>{
+  if(!editing) return;
+  items=items.filter(x=>x.id!==editing);
+  editing=null; fillForm(null);
+  await persist(); renderField();
+});
+$('b-export').addEventListener('click',()=>{
+  const blob=new Blob([JSON.stringify(items,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='sss-sounds.json'; a.click();
+  URL.revokeObjectURL(a.href);
+});
+$('b-import').addEventListener('click',()=>$('f-import').click());
+$('f-import').addEventListener('change',e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const rd=new FileReader();
+  rd.onload=async()=>{
+    try{
+      const arr=JSON.parse(rd.result);
+      if(Array.isArray(arr)){ items=arr; editing=null; fillForm(null);
+        await persist(); renderField(); }
+    }catch(err){ $('storeinfo').textContent='読み込めませんでした。JSONファイルか確かめてください。'; }
+  };
+  rd.readAsText(f);
+});
+
+(async function init(){
+  const h=new Date().getHours();
+  $('notice').hidden=(h>=16||h<4);
+  const {data,mode}=await loadAll();
+  items=data; storeMode=mode;
+  $('storeinfo').textContent=modeText(mode)+'　/　標本数: '+items.length;
+  renderField(); fillForm(null);
+})();
+</script>
+</body>
+</html>

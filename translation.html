@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>種間翻訳学科 — 語の採集帳</title>
+<style>
+  :root{
+    --bg:#ECEDE3; --bg2:#F4F3EA; --ink:#33402F; --dim:#7C8676;
+    --accent:#4E7A55; --line:rgba(50,65,48,.18); --card:rgba(255,255,252,.72);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+    background:var(--bg); color:var(--ink); min-height:100vh;
+    line-height:1.9; letter-spacing:.04em; overflow-x:hidden}
+  #myc{position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.45;
+       animation:mycdrift 90s ease-in-out infinite alternate}
+  @keyframes mycdrift{from{transform:translate(-12px,-8px) scale(1.03)}to{transform:translate(12px,10px) scale(1.06)}}
+  @media (prefers-reduced-motion: reduce){ #myc{animation:none} }
+  main{position:relative; z-index:1; max-width:680px; margin:0 auto; padding:6vh 20px 12vh}
+  .eyebrow{font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:.66rem;
+    letter-spacing:.3em; color:var(--dim); text-transform:uppercase; margin-bottom:1rem}
+  .eyebrow a{color:var(--dim); text-decoration:none; border-bottom:1px dotted var(--dim)}
+  h1{font-size:clamp(1.3rem,5vw,1.8rem); font-weight:600; letter-spacing:.1em; margin-bottom:.3rem}
+  .sub{font-size:.84rem; color:var(--dim); font-style:italic; margin-bottom:1.6rem}
+  .creed{font-size:.9rem; border-left:1px solid var(--line); padding-left:1em;
+    color:var(--ink); margin-bottom:1rem; line-height:2.1}
+  .notice{font-size:.78rem; color:var(--dim); font-family:ui-monospace,Menlo,monospace;
+    border:1px dotted var(--line); padding:.6em 1em; margin-bottom:1.4rem; letter-spacing:.06em}
+  h2{font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:.64rem; letter-spacing:.28em;
+    color:var(--dim); font-weight:400; border-bottom:1px solid var(--line);
+    padding-bottom:.5rem; margin:2.6rem 0 1rem}
+
+  /* ---- 標本カード ---- */
+  #cards{display:grid; gap:1rem}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:3px;
+    padding:1.1rem 1.2rem 1rem; cursor:pointer; text-align:left; width:100%;
+    font-family:inherit; color:inherit; transition:border-color .3s}
+  .card:hover,.card:focus-visible{border-color:var(--accent); outline:none}
+  .card .word{font-size:1.25rem; font-weight:600; letter-spacing:.06em}
+  .card .lang{font-family:ui-monospace,Menlo,monospace; font-size:.64rem;
+    letter-spacing:.2em; color:var(--dim); margin-left:.8em}
+  .card dl{margin-top:.7rem; font-size:.84rem}
+  .card dt{font-family:ui-monospace,Menlo,monospace; font-size:.6rem;
+    letter-spacing:.22em; color:var(--dim); margin-top:.5rem}
+  .card dd{margin-left:0; line-height:1.9}
+  .card .margin{margin-top:.8rem; border-left:2px solid var(--accent);
+    padding:.2em 0 .2em .9em; font-size:.88rem; line-height:2}
+  .card .margin .mlabel{font-family:ui-monospace,Menlo,monospace; font-size:.58rem;
+    letter-spacing:.24em; color:var(--accent); display:block; margin-bottom:.2em}
+  .card time{display:block; margin-top:.7rem; font-family:ui-monospace,Menlo,monospace;
+    font-size:.6rem; letter-spacing:.18em; color:var(--dim)}
+  .emptymsg{color:var(--dim); font-size:.86rem; padding:1.4em .4em; line-height:2.2}
+
+  /* ---- フォーム ---- */
+  .form{display:grid; gap:.9rem}
+  label{font-family:ui-monospace,Menlo,monospace; font-size:.66rem;
+    letter-spacing:.2em; color:var(--dim); display:block; margin-bottom:.35rem}
+  input[type=text],textarea{width:100%; background:var(--bg2); color:var(--ink);
+    border:1px solid var(--line); border-radius:3px; padding:.6em .8em;
+    font-family:inherit; font-size:.92rem; letter-spacing:.04em}
+  input:focus,textarea:focus{outline:none; border-color:var(--accent)}
+  textarea{min-height:4em; resize:vertical; line-height:1.8}
+  .row2{display:grid; grid-template-columns:2fr 1fr; gap:.9rem}
+  .btns{display:flex; flex-wrap:wrap; gap:.6rem; margin-top:.3rem}
+  .btns button{font-family:ui-monospace,Menlo,monospace; font-size:.72rem; letter-spacing:.16em;
+    background:transparent; color:var(--ink); border:1px solid var(--line); border-radius:2em;
+    padding:.55em 1.3em; cursor:pointer; transition:border-color .3s,color .3s}
+  .btns button:hover,.btns button:focus-visible{border-color:var(--accent); color:var(--accent); outline:none}
+  .btns button.danger:hover{border-color:#A55; color:#955}
+  .status{font-family:ui-monospace,Menlo,monospace; font-size:.68rem; color:var(--dim);
+    letter-spacing:.1em; line-height:2.2}
+  .status button{font-family:inherit; font-size:inherit; letter-spacing:inherit;
+    background:none; border:none; color:var(--accent); cursor:pointer;
+    border-bottom:1px dotted var(--accent); padding:0; margin-right:1.2em}
+  footer{font-size:.72rem; color:var(--dim); border-top:1px solid var(--line);
+    margin-top:3rem; padding-top:1.3rem; line-height:2.1}
+</style>
+</head>
+<body>
+<canvas id="myc" aria-hidden="true"></canvas>
+<main>
+  <p class="eyebrow"><a href="index.html">← 校門</a>　Strange Stranger School</p>
+  <h1>種間翻訳学科</h1>
+  <p class="sub">語の採集帳 — a specimen book of words.</p>
+  <p class="creed">ここでは語を「覚える」のではなく「採集」します。<br>標本の価値は、翻訳できた部分ではなく、<b>翻訳しきれなかった余白</b>の記述で決まります。</p>
+  <p class="notice" id="notice" hidden>本学科の開講は暁・昼です。いまは閉講中ですが、夜に採れる語もあります。</p>
+
+  <h2>採集ラベル / COLLECT</h2>
+  <div class="form">
+    <div class="row2">
+      <div>
+        <label for="f-word">語</label>
+        <input type="text" id="f-word" placeholder="例: hygge">
+      </div>
+      <div>
+        <label for="f-lang">言語</label>
+        <input type="text" id="f-lang" placeholder="例: デンマーク語">
+      </div>
+    </div>
+    <div>
+      <label for="f-place">どこで出会ったか</label>
+      <input type="text" id="f-place" placeholder="例: ポッドキャストの相づちの中">
+    </div>
+    <div>
+      <label for="f-texture">手触り</label>
+      <input type="text" id="f-texture" placeholder="例: 毛布のように丸い音。語尾が灯る">
+    </div>
+    <div>
+      <label for="f-near">いちばん近い日本語</label>
+      <input type="text" id="f-near" placeholder="例: 「ぬくもり」と「団らん」の中間あたり">
+    </div>
+    <div>
+      <label for="f-margin">翻訳しきれない余白</label>
+      <textarea id="f-margin" placeholder="例: 「居心地」と訳すと、薄暗さと蝋燭の成分が抜け落ちる"></textarea>
+    </div>
+    <div class="btns">
+      <button id="b-save">採集する</button>
+      <button id="b-new" hidden>新しい標本</button>
+      <button id="b-del" class="danger" hidden>標本を手放す</button>
+    </div>
+  </div>
+
+  <h2>標本箱 / SPECIMEN BOX　<span id="count"></span></h2>
+  <div id="cards"><p class="emptymsg">まだ標本がありません。最初の一語は、たいてい今日すでに出会っています。</p></div>
+
+  <h2>保管室 / ARCHIVE ROOM</h2>
+  <p class="status">
+    <button id="b-export">記録を書き出す</button>
+    <button id="b-import">読み込む</button>
+    <input type="file" id="f-import" accept="application/json" hidden>
+    <br><span id="storeinfo"></span>
+  </p>
+
+  <footer>学位はありません。余白の記述が増えていくことだけが、閾を越えた証拠です。</footer>
+</main>
+
+<script>
+/* ====== 菌糸メッシュ ====== */
+window.MYC={rgb:'78,110,82'};
+(function(){
+  const cv=document.getElementById('myc'), ctx=cv.getContext('2d');
+  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let W,H; const ws=[]; const MAX=26;
+  function size(){const d=Math.min(window.devicePixelRatio||1,1.5);
+    W=cv.width=Math.floor(innerWidth*d); H=cv.height=Math.floor(innerHeight*d);}
+  size(); addEventListener('resize',size);
+  function reset(w){w.x=Math.random()*W; w.y=Math.random()*H;
+    w.a=Math.random()*6.283; w.life=240+Math.random()*420;}
+  function spawn(x,y,a){if(ws.length>=MAX)return;
+    const w={}; reset(w); if(x!==undefined){w.x=x;w.y=y;w.a=a;} ws.push(w);}
+  for(let i=0;i<12;i++)spawn();
+  function step(){
+    ctx.globalCompositeOperation='destination-out';
+    ctx.fillStyle='rgba(0,0,0,0.045)'; ctx.fillRect(0,0,W,H);
+    ctx.globalCompositeOperation='source-over';
+    const c=window.MYC.rgb;
+    for(const w of ws){
+      const nx=w.x+Math.cos(w.a)*1.4, ny=w.y+Math.sin(w.a)*1.4;
+      ctx.strokeStyle='rgba('+c+',0.5)'; ctx.lineWidth=0.7;
+      ctx.beginPath(); ctx.moveTo(w.x,w.y); ctx.lineTo(nx,ny); ctx.stroke();
+      w.x=nx; w.y=ny; w.a+=(Math.random()-0.5)*0.55; w.life--;
+      if(Math.random()<0.012){
+        ctx.fillStyle='rgba('+c+',0.6)';
+        ctx.beginPath(); ctx.arc(w.x,w.y,1.1,0,6.3); ctx.fill();
+        spawn(w.x,w.y,w.a+(Math.random()<.5?1:-1)*0.9);
+      }
+      if(w.life<=0||w.x<-9||w.x>W+9||w.y<-9||w.y>H+9) reset(w);
+    }
+  }
+  if(reduced){for(let i=0;i<700;i++)step();}
+  else{(function loop(){step(); requestAnimationFrame(loop);})();}
+})();
+
+/* ====== 保管室 ====== */
+const KEY='sss-words';
+const mem={};
+async function loadAll(){
+  try{ if(window.storage){ const r=await window.storage.get(KEY);
+    if(r&&r.value) return {data:JSON.parse(r.value), mode:'cloud'}; return {data:[],mode:'cloud'}; } }catch(e){}
+  try{ const v=localStorage.getItem(KEY);
+    return {data:v?JSON.parse(v):[], mode:'local'}; }catch(e){}
+  return {data:mem[KEY]||[], mode:'memory'};
+}
+async function saveAll(data){
+  const s=JSON.stringify(data);
+  try{ if(window.storage){ await window.storage.set(KEY,s); return 'cloud'; } }catch(e){}
+  try{ localStorage.setItem(KEY,s); return 'local'; }catch(e){}
+  mem[KEY]=data; return 'memory';
+}
+function modeText(m){
+  return {cloud:'記録先: 学校の保管室（この場所に保存されます）',
+          local:'記録先: この端末（同じブラウザで開けば残ります）',
+          memory:'記録先: このページ限り — 「書き出す」をお勧めします'}[m];
+}
+
+/* ====== 採集帳 ====== */
+const $=id=>document.getElementById(id);
+let items=[], editing=null;
+
+function el(tag, cls, text){
+  const n=document.createElement(tag);
+  if(cls) n.className=cls;
+  if(text!==undefined) n.textContent=text;
+  return n;
+}
+function renderCards(){
+  const box=$('cards'); box.innerHTML='';
+  $('count').textContent=items.length?('標本数 '+items.length):'';
+  if(!items.length){
+    box.appendChild(el('p','emptymsg','まだ標本がありません。最初の一語は、たいてい今日すでに出会っています。'));
+    return;
+  }
+  for(const it of [...items].reverse()){
+    const card=el('button','card');
+    card.type='button';
+    const head=el('div');
+    head.appendChild(el('span','word',it.word));
+    if(it.lang) head.appendChild(el('span','lang',it.lang));
+    card.appendChild(head);
+    const dl=el('dl');
+    const rows=[['どこで出会ったか',it.place],['手触り',it.texture],['いちばん近い日本語',it.near]];
+    for(const [k,v] of rows){
+      if(!v) continue;
+      dl.appendChild(el('dt',null,k));
+      dl.appendChild(el('dd',null,v));
+    }
+    card.appendChild(dl);
+    if(it.margin){
+      const m=el('div','margin');
+      const lb=el('span','mlabel','翻訳しきれない余白');
+      m.appendChild(lb);
+      m.appendChild(document.createTextNode(it.margin));
+      card.appendChild(m);
+    }
+    card.appendChild(el('time',null,'採集日 '+(it.date||'—')));
+    card.addEventListener('click',()=>openItem(it.id));
+    box.appendChild(card);
+  }
+}
+function fillForm(it){
+  $('f-word').value=it?it.word:'';
+  $('f-lang').value=it?(it.lang||''):'';
+  $('f-place').value=it?(it.place||''):'';
+  $('f-texture').value=it?(it.texture||''):'';
+  $('f-near').value=it?(it.near||''):'';
+  $('f-margin').value=it?(it.margin||''):'';
+  $('b-save').textContent=it?'更新する':'採集する';
+  $('b-del').hidden=!it;
+  $('b-new').hidden=!it;
+}
+function openItem(id){
+  editing=id;
+  fillForm(items.find(x=>x.id===id));
+  document.querySelector('.form').scrollIntoView({behavior:'smooth',block:'start'});
+}
+async function persist(){
+  const mode=await saveAll(items);
+  $('storeinfo').textContent=modeText(mode)+'　/　標本数: '+items.length;
+}
+$('b-save').addEventListener('click',async()=>{
+  const word=$('f-word').value.trim();
+  if(!word){ $('f-word').focus(); return; }
+  const data={word, lang:$('f-lang').value.trim(), place:$('f-place').value.trim(),
+    texture:$('f-texture').value.trim(), near:$('f-near').value.trim(),
+    margin:$('f-margin').value.trim()};
+  if(editing){
+    Object.assign(items.find(x=>x.id===editing), data);
+  }else{
+    items.push(Object.assign({id:Date.now(), date:new Date().toISOString().slice(0,10)}, data));
+  }
+  await persist(); renderCards();
+  if(!editing) fillForm(null); else openItem(editing);
+});
+$('b-new').addEventListener('click',()=>{ editing=null; fillForm(null); });
+$('b-del').addEventListener('click',async()=>{
+  if(!editing) return;
+  items=items.filter(x=>x.id!==editing);
+  editing=null; fillForm(null);
+  await persist(); renderCards();
+});
+$('b-export').addEventListener('click',()=>{
+  const blob=new Blob([JSON.stringify(items,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='sss-words.json'; a.click();
+  URL.revokeObjectURL(a.href);
+});
+$('b-import').addEventListener('click',()=>$('f-import').click());
+$('f-import').addEventListener('change',e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const rd=new FileReader();
+  rd.onload=async()=>{
+    try{
+      const arr=JSON.parse(rd.result);
+      if(Array.isArray(arr)){ items=arr; editing=null; fillForm(null);
+        await persist(); renderCards(); }
+    }catch(err){ $('storeinfo').textContent='読み込めませんでした。JSONファイルか確かめてください。'; }
+  };
+  rd.readAsText(f);
+});
+
+(async function init(){
+  const h=new Date().getHours();
+  $('notice').hidden=(h>=4&&h<16);
+  const {data,mode}=await loadAll();
+  items=data;
+  $('storeinfo').textContent=modeText(mode)+'　/　標本数: '+items.length;
+  renderCards(); fillForm(null);
+})();
+</script>
+</body>
+</html>
