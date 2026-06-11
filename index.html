@@ -182,7 +182,7 @@ window.MYC = { rgb:'140,160,185' };
             line:'rgba(70,55,58,.18)', myc:'110,90,92',
             mood:'川がまだ講義の準備をしています。紙の匂いが冷たい。', breath:'18s'},
     day:   {bg1:'#E8EAE0', bg2:'#F2F1E7', ink:'#33402F', dim:'#7C8676', accent:'#4E7A55',
-            line:'rgba(50,65,48,.16)', myc:'78,110,82',
+            line:'rgba(50,65,48,.16)', myc:'50,88,42',
             mood:'風が今日のシラバスを運んできました。鳥は三限目から図書館にいます。', breath:'14s'},
     dusk:  {bg1:'#3C2E3E', bg2:'#7A4F46', ink:'#E5D5CB', dim:'#A98F92', accent:'#D89A6A',
             line:'rgba(230,210,200,.2)', myc:'210,160,130',
@@ -235,7 +235,12 @@ window.MYC = { rgb:'140,160,185' };
     const r=document.documentElement.style;
     for(const k of ['bg1','bg2','ink','dim','accent','line']) r.setProperty('--'+k,p[k]);
     r.setProperty('--breath',p.breath);
-    document.body.style.background=p.bg1; document.body.style.color=p.ink;
+    if(ph==='day'){
+  document.body.style.background='linear-gradient(160deg, #C9CB7A 0%, #8FBF6A 55%, #5A9A52 100%)';
+}else{
+  document.body.style.background=p.bg1;
+}
+document.body.style.color=p.ink;
     window.MYC.rgb=p.myc;
 
     $('o-time').textContent=now.toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'})
